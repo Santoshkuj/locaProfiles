@@ -109,7 +109,7 @@ const ProfilePopup = ({ isOpen, closePopup, profileState = {} }) => {
   
         if (addProfile?.payload?.success) {
           toast.success(addProfile?.payload?.message);
-          await dispatch(fetchProfiles())
+          await dispatch(fetchProfiles({}))
           handleClose();
           setFormData({
             name: '',
@@ -130,7 +130,7 @@ const ProfilePopup = ({ isOpen, closePopup, profileState = {} }) => {
         const updateProfile = await dispatch(addProfile(submitData));
         if (updateProfile?.payload?.success) {
           toast.success(updateProfile?.payload?.message);
-          await dispatch(fetchProfiles())
+          await dispatch(fetchProfiles({}))
           handleClose();
           setFormData({
             name: '',

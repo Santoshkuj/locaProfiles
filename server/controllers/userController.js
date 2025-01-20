@@ -46,40 +46,67 @@ const getGeocode = async (req, res) => {
   }
 };
 
-const getProfileById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const profile = await Profile.findById(id).populate("address");
 
-    if (!profile) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Profile not found" });
+const getProfiles = async (req, res) => {
+  const { searchQuery, city, state, page = 1 } = req.query;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  try {
+    const match = {};
+
+    if (searchQuery) {
+      match.$or = [
+        { name: { $regex: searchQuery, $options: 'i' } },
+        { email: { $regex: searchQuery, $options: 'i' } },
+        { 'address.city': { $regex: searchQuery, $options: 'i' } },
+        { 'address.state': { $regex: searchQuery, $options: 'i' } },
+        { 'address.zipcode': { $regex: searchQuery, $options: 'i' } },
+      ];
     }
 
-    res.status(200).json({ success: true, profile });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-};
-const getProfiles = async (req, res) => {
-  try {
-    const { page = 1 } = req.query;
-    const limit = 10;
-    const skip = (page - 1) * limit;
+    if (city || state) {
+      match.$and = [];
+      if (city) match.$and.push({ "address.city": { $regex: city, $options: 'i' } });
+      if (state) match.$and.push({ "address.state": { $regex: state, $options: 'i' } });
+    }
 
-    const profiles = await Profile.find()
-      .skip(skip)
-      .limit(limit)
-      .populate("address");
+    const profiles = await Profile.aggregate([
+      {
+        $lookup: {
+          from: "addresses",
+          localField: "address",
+          foreignField: "_id",
+          as: "address",
+        },
+      },
+      { $unwind: "$address" }, // Unwind the populated address field
+      { $match: match }, // Apply match conditions
+      { $skip: skip }, // Skip for pagination
+      { $limit: limit }, // Limit for pagination
+    ]);
 
-    const totalProfiles = await Profile.countDocuments();
-    const totalPages = Math.ceil(totalProfiles / limit);
+    const totalProfiles = await Profile.aggregate([
+      {
+        $lookup: {
+          from: "addresses",
+          localField: "address",
+          foreignField: "_id",
+          as: "address",
+        },
+      },
+      { $unwind: "$address" },
+      { $match: match },
+      { $count: "total" }, // Count matching documents
+    ]);
+
+    const totalCount = totalProfiles[0]?.total || 0;
+    const totalPages = Math.ceil(totalCount / limit);
 
     res.status(200).json({
       success: true,
       profiles,
-      totalProfiles,
+      totalProfiles: totalCount,
       totalPages,
       currentPage: parseInt(page),
     });
@@ -91,4 +118,5 @@ const getProfiles = async (req, res) => {
   }
 };
 
-export { getGeocode, getProfileById, getProfiles };
+
+export { getGeocode, getProfiles };

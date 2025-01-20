@@ -1,6 +1,13 @@
+import Profiles from "../../components/Allprofiles"
+
 const Home = () => {
+
   return (
-    <div>Home</div>
+    <div className="w-full">
+      <div>
+        <Profiles/>
+      </div>
+    </div>
   )
 }
 export default Home

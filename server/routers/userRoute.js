@@ -1,10 +1,9 @@
 import { Router } from "express";
-import { getGeocode, getProfileById, getProfiles } from "../controllers/userController.js";
+import { getGeocode, getProfiles } from "../controllers/userController.js";
 
 const router = Router()
 
 router.get('/profiles',getProfiles)
-router.get('/profile/:id',getProfileById)
-router.get('/geocode',getGeocode)
+router.post('/geocode',getGeocode)
 
 export default router

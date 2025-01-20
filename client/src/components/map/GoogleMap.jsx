@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchGeocode } from "../slices/geocodeSlice";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import { fetchGeocode } from "../../redux/user/userSlice";
 
 const GoogleMapComponent = ({ address }) => {
   const dispatch = useDispatch();
-  const { geocode, loading, error } = useSelector((state) => state.geocode);
+  const { geocode, loading, error } = useSelector((state) => state.user);
 
   // Call API to fetch geocode when address changes
   useEffect(() => {

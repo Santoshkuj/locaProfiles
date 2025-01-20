@@ -13,30 +13,31 @@ const initialState =  {
   }
 
 // Async actions for API calls
-export const fetchProfiles = createAsyncThunk('profiles/fetchProfiles', async (_, thunkAPI) => {
+export const fetchProfiles = createAsyncThunk(
+  'profiles/fetchProfiles',
+  async ({ searchQuery = '', city = '', state = '' }, thunkAPI) => {
     try {
-      const response = await api.get('/api/user/profiles');
+      const params = new URLSearchParams();
+      if (searchQuery) params.append('searchQuery', searchQuery);
+      if (city) params.append('city', city);
+      if (state) params.append('state', state);
+
+      const response = await api.get(`/api/user/profiles?${params.toString()}`);
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+      return thunkAPI.rejectWithValue(error.response?.data || 'Something went wrong');
     }
-  });
-export const fetchUserProfile = createAsyncThunk('profiles/fetchUserProfile', async (userId, thunkAPI) => {
-    try {
-      const response = await api.get(`/api/profile/${userId}`);
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
-    }
-  });
+  }
+);
+
 
 // Async thunk to fetch geocode
 export const fetchGeocode = createAsyncThunk(
   'map/fetchGeocode',
   async (address, thunkAPI) => {
     try {
-      const response = await api.post('/api/geocode', address);
-      return response.data;
+      const response = await api.post('/api/user/geocode', address);
+      return response.data.geocode;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data);
     }
@@ -44,7 +45,7 @@ export const fetchGeocode = createAsyncThunk(
 );
 
 const userSlice = createSlice({
-  name: 'geocode',
+  name: 'user',
   initialState,
   reducers: {
     setCenter: (state, action) => {
@@ -79,17 +80,6 @@ const userSlice = createSlice({
         state.profiles = action.payload.profiles
       })
       .addCase(fetchProfiles.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(fetchUserProfile.pending,(state) =>{
-        state.loading = true;
-        state.error = null;
-      }).addCase(fetchUserProfile.fulfilled, (state,action)=>{
-        state.loading = false,
-        state.userProfile = action.payload
-      })
-      .addCase(fetchUserProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
