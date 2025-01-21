@@ -6,6 +6,7 @@ import Dashboard from "./pages/admin/Dashboard"
 import AdminLoginPage from "./pages/admin/login"
 import UserProfile from "./components/UserProfile"
 import OpenStreetMapComponent from "./components/map/OpenStreetMap"
+import GoogleMapComponent from "./components/map/GoogleMap"
 
 const App = () => {
 
@@ -27,7 +28,7 @@ const App = () => {
         },
         {
           path: '/user/map',
-          element: <OpenStreetMapComponent />
+          element: <GoogleMapComponent />
         },
       ]
     },

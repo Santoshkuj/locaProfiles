@@ -4,9 +4,9 @@ import {v2 as cloudinary} from 'cloudinary'
 
 const addProfile = async (req, res) => {
   try {
-    const { name,email, description, address } = req.body;
+    const { name,email, description, interests, address } = req.body;
     const photo = req.file;
-    if (!name || !email || !photo || !description || !address) {
+    if (!name || !email || !photo || !description || !address || !interests) {
       return res.status(400).json({
         success: false,
         error:
@@ -27,8 +27,8 @@ const addProfile = async (req, res) => {
       }
     }
 
-    const { street, city, state, zipCode } = address;
-    if (!street || !city || !state || !zipCode) {
+    const { street, city, state, zipCode,country } = address;
+    if (!street || !city || !state || !zipCode || !country) {
       return res.status(400).json({
         success: false,
         error: "Address must include street, city, state, and zipCode.",
@@ -55,6 +55,7 @@ const addProfile = async (req, res) => {
     const newProfile = new Profile({
       name,
       email,
+      interests,
       photo :imageUrl,
       description,
       address: existingAddress._id,
@@ -77,7 +78,7 @@ const addProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, description, address } = req.body;
+    const { name, email, description,interests, address } = req.body;
 
     const existingProfile = await Profile.findById(id);
     if (!existingProfile) {
@@ -107,6 +108,7 @@ const updateProfile = async (req, res) => {
 
     existingProfile.name = name || existingProfile.name;
     existingProfile.email = email || existingProfile.email;
+    existingProfile.interests = interests || existingProfile.interests;
     existingProfile.photo = updatedPhotoUrl;
     existingProfile.description = description || existingProfile.description;
     existingProfile.address = existingAddress._id;
@@ -136,6 +138,20 @@ const deleteProfile = async (req, res) => {
         .json({ success: false, message: "Profile not found" });
     }
 
+    if (profile.photo) {
+      const publicId = profile.photo.split('/').pop().split('.')[0];
+      try {
+        await cloudinary.uploader.destroy(publicId);
+      } catch (cloudinaryError) {
+        return res.status(500).json({
+          success: false,
+          message: 'Error deleting image from Cloudinary',
+          error: cloudinaryError.message,
+        });
+      }
+    }
+
+    // Check if there is an associated address and delete it if necessary
     if (profile.address) {
       const address = await Address.findById(profile.address);
       if (address) {
@@ -149,6 +165,7 @@ const deleteProfile = async (req, res) => {
       }
     }
 
+    // Delete the profile
     await Profile.deleteOne({ _id: id });
 
     res
@@ -158,5 +175,6 @@ const deleteProfile = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
 
 export { addProfile, updateProfile, deleteProfile };

@@ -15,12 +15,14 @@ const ProfilePopup = ({ isOpen, closePopup, profileState = {} }) => {
     name: '',
     email: '',
     photo: '',
+    interests: '',
     photoFile: null,
     description: '',
     address: {
       street: '',
       city: '',
       state: '',
+      country: '',
       zipCode: '',
     },
   });
@@ -39,12 +41,14 @@ const ProfilePopup = ({ isOpen, closePopup, profileState = {} }) => {
         name: profileState.name || '',
         email: profileState.email || '',
         photo: profileState.photo || '',
+        interests: profileState.interests || '',
         photoFile: null,
         description: profileState.description || '',
         address: {
           street: profileState.address?.street || '',
           city: profileState.address?.city || '',
           state: profileState.address?.state || '',
+          country: profileState.address?.country || '',
           zipCode: profileState.address?.zipCode || '',
         },
       });
@@ -56,7 +60,7 @@ const ProfilePopup = ({ isOpen, closePopup, profileState = {} }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (['street', 'city', 'state', 'zipCode'].includes(name)) {
+    if (['street', 'city', 'state', 'zipCode', 'country'].includes(name)) {
       setFormData((prevData) => ({
         ...prevData,
         address: {
@@ -93,10 +97,12 @@ const ProfilePopup = ({ isOpen, closePopup, profileState = {} }) => {
     const submitData = new FormData();
     submitData.append('name', formData.name);
     submitData.append('email', formData.email);
+    submitData.append('interests', formData.interests);
     submitData.append('description', formData.description);
     submitData.append('address[street]', formData.address.street);
     submitData.append('address[city]', formData.address.city);
     submitData.append('address[state]', formData.address.state);
+    submitData.append('address[country]', formData.address.country);
     submitData.append('address[zipCode]', formData.address.zipCode);
   
     if (formData.photoFile) {
@@ -115,12 +121,14 @@ const ProfilePopup = ({ isOpen, closePopup, profileState = {} }) => {
             name: '',
             email: '',
             photo: '',
+            interests: '',
             photoFile: null,
             description: '',
             address: {
               street: '',
               city: '',
               state: '',
+              country: '',
               zipCode: '',
             },
           });
@@ -136,12 +144,14 @@ const ProfilePopup = ({ isOpen, closePopup, profileState = {} }) => {
             name: '',
             email: '',
             photo: '',
+            interests: '',
             photoFile: null,
             description: '',
             address: {
               street: '',
               city: '',
               state: '',
+              country: '',
               zipCode: '',
             },
           });
@@ -193,6 +203,15 @@ const ProfilePopup = ({ isOpen, closePopup, profileState = {} }) => {
           required
           className="w-full border rounded p-2"
         />
+        <input
+          type="text"
+          name="interests"
+          placeholder="interests"
+          value={formData.interests}
+          onChange={handleChange}
+          required
+          className="w-full border rounded p-2"
+        />
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Photo</label>
           <input
@@ -240,6 +259,15 @@ const ProfilePopup = ({ isOpen, closePopup, profileState = {} }) => {
           name="state"
           placeholder="State"
           value={formData.address?.state}
+          onChange={handleChange}
+          required
+          className="w-full border rounded p-2"
+        />
+        <input
+          type="text"
+          name="country"
+          placeholder="country"
+          value={formData.address?.country}
           onChange={handleChange}
           required
           className="w-full border rounded p-2"

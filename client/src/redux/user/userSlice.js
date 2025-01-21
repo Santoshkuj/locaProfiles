@@ -70,7 +70,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchGeocode.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload?.message;
       })
       .addCase(fetchProfiles.pending,(state) =>{
         state.loading = true;

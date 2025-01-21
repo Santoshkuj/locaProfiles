@@ -11,11 +11,12 @@ const UserProfile = () => {
     email,
     photo,
     description,
-    address: { street, city, state, zipCode } = {},
+    interests,
+    address: { street, city, state, zipCode, country } = {},
   } = user;
 
   return (
-    <div className="container mx-auto p-4 max-w-3xl">
+    <div className="container mx-auto p-2 max-w-3xl">
       {/* Back Button */}
       <button
         onClick={() => navigate(-1)}
@@ -40,21 +41,30 @@ const UserProfile = () => {
         </div>
 
         {/* Description */}
+        <div className="flex mx-auto w-[80%] items-center justify-center gap-6">
         {description && (
-          <div className="mt-4 text-center">
-            <h2 className="text-lg font-semibold text-gray-800">About</h2>
-            <p className="mt-2 text-gray-600">{description}</p>
+          <div className="mt-2 text-center w-1/2 bg-slate-200 rounded-md p-2">
+            <h2 className="text-lg font-semibold text-gray-800 underline">About</h2>
+            <p className="mt-2 text-gray-700">{description}</p>
           </div>
         )}
+        {interests && (
+          <div className="mt-2 text-center w-1/2 bg-slate-200 rounded-md p-2">
+            <h2 className="text-lg font-semibold text-gray-700 underline">Interests</h2>
+            <p className="mt-2 text-gray-700">{interests}</p>
+          </div>
+        )}
+        </div>
 
         {/* Address Section */}
-        <div className="mt-4">
-          <h2 className="text-lg font-semibold text-gray-800">Address</h2>
-          <div className="mt-2 text-gray-600">
-            <p>Street: {street}</p>
-            <p>City: {city}</p>
-            <p>State: {state}</p>
-            <p>ZipCode: {zipCode}</p>
+        <div className="mt-4 ml-4 flex gap-10">
+          <h2 className="text-lg font-semibold text-gray-800">Address:</h2>
+          <div className=" text-gray-600 grid grid-cols-2 gap-2">
+            <span>Street: {street}</span>
+            <span>City: {city}</span>
+            <span>State: {state}</span>
+            <span>Country: {country}</span>
+            <span>ZipCode: {zipCode}</span>
           </div>
         </div>
       </div>

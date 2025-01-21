@@ -80,10 +80,10 @@ const getProfiles = async (req, res) => {
           as: "address",
         },
       },
-      { $unwind: "$address" }, // Unwind the populated address field
-      { $match: match }, // Apply match conditions
-      { $skip: skip }, // Skip for pagination
-      { $limit: limit }, // Limit for pagination
+      { $unwind: "$address" },
+      { $match: match },
+      { $skip: skip },
+      { $limit: limit },
     ]);
 
     const totalProfiles = await Profile.aggregate([
@@ -97,7 +97,7 @@ const getProfiles = async (req, res) => {
       },
       { $unwind: "$address" },
       { $match: match },
-      { $count: "total" }, // Count matching documents
+      { $count: "total" },
     ]);
 
     const totalCount = totalProfiles[0]?.total || 0;
